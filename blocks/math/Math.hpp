@@ -81,8 +81,8 @@ GR_REGISTER_BLOCK("gr::blocks::math::Add", gr::blocks::math::MathOpImpl, ([T], s
 GR_REGISTER_BLOCK("gr::blocks::math::Subtract", gr::blocks::math::MathOpImpl, ([T], std::minus<[T]>), [ uint8_t, uint16_t, uint32_t, uint64_t, int8_t, int16_t, int32_t, int64_t, float, double, gr::UncertainValue<float>, gr::UncertainValue<double>, std::complex<float>, std::complex<double> ])
 GR_REGISTER_BLOCK("gr::blocks::math::Multiply", gr::blocks::math::MathOpImpl, ([T], std::multiplies<[T]>), [ uint8_t, uint16_t, uint32_t, uint64_t, int8_t, int16_t, int32_t, int64_t, float, double, gr::UncertainValue<float>, gr::UncertainValue<double>, std::complex<float>, std::complex<double> ])
 GR_REGISTER_BLOCK("gr::blocks::math::Divide", gr::blocks::math::MathOpImpl, ([T], std::divides<[T]>), [ uint8_t, uint16_t, uint32_t, uint64_t, int8_t, int16_t, int32_t, int64_t, float, double, gr::UncertainValue<float>, gr::UncertainValue<double>, std::complex<float>, std::complex<double> ])
-GR_REGISTER_BLOCK("gr::blocks::math::Max", gr::blocks::math::MathOpImpl, ([T], gr::blocks::math::max<[T]>), [ uint8_t, uint16_t, uint32_t, uint64_t, int8_t, int16_t, int32_t, int64_t, float, double, gr::UncertainValue<float>, gr::UncertainValue<double> ])
-GR_REGISTER_BLOCK("gr::blocks::math::Min", gr::blocks::math::MathOpImpl, ([T], gr::blocks::math::min<[T]>), [ uint8_t, uint16_t, uint32_t, uint64_t, int8_t, int16_t, int32_t, int64_t, float, double, gr::UncertainValue<float>, gr::UncertainValue<double> ])
+GR_REGISTER_BLOCK("gr::blocks::math::Max", gr::blocks::math::MathOpMultiPortImpl, ([T], gr::blocks::math::max<[T]>), [ uint8_t, uint16_t, uint32_t, uint64_t, int8_t, int16_t, int32_t, int64_t, float, double ])
+GR_REGISTER_BLOCK("gr::blocks::math::Min", gr::blocks::math::MathOpMultiPortImpl, ([T], gr::blocks::math::min<[T]>), [ uint8_t, uint16_t, uint32_t, uint64_t, int8_t, int16_t, int32_t, int64_t, float, double ])
 GR_REGISTER_BLOCK("gr::blocks::math::And", gr::blocks::math::MathOpImpl, ([T], std::bit_and<[T]>), [ uint8_t, uint16_t, uint32_t, uint64_t, int8_t, int16_t, int32_t, int64_t ])
 GR_REGISTER_BLOCK("gr::blocks::math::Or", gr::blocks::math::MathOpImpl, ([T], std::bit_or<[T]>), [ uint8_t, uint16_t, uint32_t, uint64_t, int8_t, int16_t, int32_t, int64_t ])
 GR_REGISTER_BLOCK("gr::blocks::math::Xor", gr::blocks::math::MathOpImpl, ([T], std::bit_xor<[T]>), [ uint8_t, uint16_t, uint32_t, uint64_t, int8_t, int16_t, int32_t, int64_t ])
@@ -161,9 +161,26 @@ using Max = MathOpMultiPortImpl<T, max<T>>;
 template<typename T>
 using Min = MathOpMultiPortImpl<T, min<T>>;
 
-GR_REGISTER_BLOCK("gr::blocks::math::Negate", gr::blocks::math::MathOpImpl, ([T], std::negate<[T]>), [ uint8_t, uint16_t, uint32_t, uint64_t, int8_t, int16_t, int32_t, int64_t, float, double, gr::UncertainValue<float>, gr::UncertainValue<double>, std::complex<float>, std::complex<double> ])
-GR_REGISTER_BLOCK("gr::blocks::math::Not", gr::blocks::math::MathOpImpl, ([T], std::bit_not<[T]>), [ uint8_t, uint16_t, uint32_t, uint64_t, int8_t, int16_t, int32_t, int64_t ])
-GR_REGISTER_BLOCK("gr::blocks::math::Abs", gr::blocks::math::MathOpImpl, ([T], gr::blocks::math::abs_op<[T]>), [ uint8_t, uint16_t, uint32_t, uint64_t, int8_t, int16_t, int32_t, int64_t, float, double, std::complex<float>, std::complex<double> ])
+/* ------------------------------------------------------------------ *
+ *  Unary element‑wise ops (Negate / Not / Abs)                       *
+ * ------------------------------------------------------------------ */
+
+GR_REGISTER_BLOCK("gr::blocks::math::Negate", gr::blocks::math::MathOpSinglePortImpl,
+                  ([T], std::negate<[T]>),
+                  [ int8_t,  int16_t,  int32_t,  int64_t,
+                    float,   double,
+                    gr::UncertainValue<float>,  gr::UncertainValue<double> ])
+
+GR_REGISTER_BLOCK("gr::blocks::math::Not",    gr::blocks::math::MathOpSinglePortImpl,
+                  ([T], std::bit_not<[T]>),
+                  [ uint8_t, uint16_t, uint32_t, uint64_t,
+                    int8_t,  int16_t,  int32_t,  int64_t ])
+
+GR_REGISTER_BLOCK("gr::blocks::math::Abs",    gr::blocks::math::MathOpSinglePortImpl,
+                  ([T], gr::blocks::math::abs_op<[T]>),
+                  [ uint8_t, uint16_t, uint32_t, uint64_t,
+                    int8_t,  int16_t,  int32_t,  int64_t,
+                    float,   double ])
 
 template<typename T, typename op>
 requires(std::is_arithmetic_v<T>)
